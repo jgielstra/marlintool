@@ -1,13 +1,13 @@
-#!/bin/bash
+#!/bin/bash -eu
 
 # by mmone with contribution by jhol
 # on github at https://github.com/mmone/marlintool
 
 # Marlin fork optimized for the AnetA8 Prusa clone
-marlinRepositoryUrl="https://github.com/SkyNet3D/Marlin"
+#marlinRepositoryUrl="https://github.com/SkyNet3D/Marlin"
 
 # Original Marlin
-# marlinRepositoryUrl="https://github.com/MarlinFirmware/Marlin"
+marlinRepositoryUrl="https://github.com/MarlinFirmware/Marlin.git"
 
 # Anet board hardware definition repository URL.
 # Set to empty string if you don't need this.
@@ -15,6 +15,9 @@ hardwareDefinitionRepo="https://github.com/SkyNet3D/anet-board.git"
 
 # Anet board identifier.
 boardString="anet:avr:anet"
+
+# Anet version to use from Marlin/example_configurations/Anet/
+ANETVER="A8"
 
 # Arduino Mega
 # boardString="arduino:avr:mega:cpu=atmega2560"
@@ -99,8 +102,10 @@ getDependencies()
 getMarlin()
 {
    echo -e "\nCloning Marlin \"$marlinRepositoryUrl\"...\n"
-
    git clone "$marlinRepositoryUrl" "$marlinDir" 
+   backupMarlinConfiguration git
+   cp "$marlinDir"/Marlin/example_configurations/Anet/${ANETVER}/Configuration.h  "$marlinDir"/Marlin/Configuration.h
+   cp "$marlinDir"/Marlin/example_configurations/Anet/${ANETVER}/Configuration_adv.h  "$marlinDir"/Marlin/Configuration_adv.h
    exit
 }
 
@@ -247,7 +252,7 @@ printDocu()
 
 checkTools git tar wget
 
-if [ "$1" = "" ]; then printDocu; exit 1; fi
+if [ "$#" -lt 1 ]; then printDocu; exit 1; fi
 
 while [ "$1" != "" ]; do
     case $1 in
